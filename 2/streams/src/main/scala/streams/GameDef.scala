@@ -130,12 +130,6 @@ trait GameDef {
                else                        deltaRow(2, 1)
 
     /**
-     * Returns the list of positions reachable from the current state
-     * which are inside the terrain.
-     */
-    def legalNeighbors: List[(Block, Move)] = neighbors filter (_._1.isLegal)
-
-    /**
      * Returns the list of blocks that can be obtained by moving
      * the current block, together with the corresponding move.
      */
@@ -147,17 +141,15 @@ trait GameDef {
      * Returns `true` if the block is standing.
      */
     def isStanding: Boolean = b1 == b2
-
-    /**
-     * Returns `true` if the block is entirely inside the terrain.
-     */
-    def isLegal: Boolean = startTerrain(b1) && startTerrain(b2)
   }
 
   case class State(val block: Block, val terrain: Terrain) {
     def legalNeighbors: List[(State, Move)] = for {
-      (newBlock, move) <- block.legalNeighbors
-    } yield (State(newBlock, terrain pressedBy newBlock), move)
+      (newBlock, move) <- block.neighbors
+      s = State(newBlock, terrain) if s.isLegal
+    } yield (s, move)
+
+    def isLegal: Boolean = terrain(block.b1) && terrain(block.b2)
   }
 
   def startState: State = State(startBlock, startTerrain)

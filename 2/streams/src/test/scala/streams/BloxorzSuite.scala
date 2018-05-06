@@ -16,15 +16,16 @@ class BloxorzSuite extends FunSuite {
      * `startPos`. This can be used to verify if a certain list of moves
      * is a valid solution, i.e. leads to the goal.
      */
-    def solve(ls: List[Move]): Block =
-      ls.foldLeft(startBlock) { case (block, move) =>
-        require(block.isLegal) // The solution must always lead to legal blocks
-        move match {
+    def solve(ls: List[Move]): State =
+      ls.foldLeft(startState) { case (state, move) =>
+        require(state.isLegal) // The solution must always lead to legal blocks
+        val State(block, terrain) = state
+        State(move match {
           case Left => block.left
           case Right => block.right
           case Up => block.up
           case Down => block.down
-        }
+        }, terrain)
     }
   }
 
@@ -105,7 +106,7 @@ class BloxorzSuite extends FunSuite {
 
   test("optimal solution for level 1") {
     new Level1 {
-      assert(solve(solution) == Block(goal, goal))
+      assert(solve(solution).block == Block(goal, goal))
       println("Level 1: " + solution)
     }
   }
