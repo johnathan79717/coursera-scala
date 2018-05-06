@@ -75,10 +75,45 @@ trait StringParserTerrain extends GameDef {
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
 
-  lazy val startTerrain: Terrain = new Terrain {
-    def apply(pos: Pos) = terrainFunction(vector)(pos)
-    def pressedBy(b: Block) = this
+  abstract class Switch {
+    val positions: List[Pos]
+    val isHard: Boolean
+    def transformSquare(c: Char): Char
+    def activate(t: TerrainWithSwitches): TerrainWithSwitches = {
+      val newVector = (positions foldLeft t.vector) {
+        case (v, Pos(row, col)) => {
+          val rowVector = v(row)
+          v.updated(row, rowVector.updated(col, transformSquare(rowVector(col))))
+        }
+      }
+      TerrainWithSwitches(newVector)
+    }
   }
+  case object NoOp extends Switch {
+    val positions = List()
+    val isHard = true
+    def transformSquare(c: Char) = c
+  }
+  case class Toggle(val positions: List[Pos], val isHard: Boolean) extends Switch {
+    def transformSquare(c: Char) = if (c == '-') 'o' else '-'
+  }
+
+  val switches: Map[Pos, Switch] = Map()
+  type V2 = Vector[Vector[Char]]
+
+  case class TerrainWithSwitches(val vector: V2) extends Terrain {
+    def apply(pos: Pos) = terrainFunction(vector)(pos)
+    def pressedBy(p: Pos, isStanding: Boolean): TerrainWithSwitches = {
+      val switch = switches(p)
+      if (switch.isHard && !isStanding) this
+      else switch.activate(this)
+    }
+    def pressedBy(b: Block): Terrain =
+      if (b.isStanding) pressedBy(b.b1, true)
+      else pressedBy(b.b1, false).pressedBy(b.b2, false)
+  }
+
+  lazy val startTerrain: Terrain = TerrainWithSwitches(vector)
   lazy val startPos: Pos = findChar('S', vector)
   lazy val goal: Pos = findChar('T', vector)
 
