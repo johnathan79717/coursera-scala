@@ -75,8 +75,9 @@ trait StringParserTerrain extends GameDef {
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
 
-  lazy val terrain: Terrain = new Terrain {
+  lazy val startTerrain: Terrain = new Terrain {
     def apply(pos: Pos) = terrainFunction(vector)(pos)
+    def pressedBy(b: Block) = this
   }
   lazy val startPos: Pos = findChar('S', vector)
   lazy val goal: Pos = findChar('T', vector)

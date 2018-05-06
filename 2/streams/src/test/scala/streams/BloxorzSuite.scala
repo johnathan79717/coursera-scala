@@ -54,16 +54,16 @@ class BloxorzSuite extends FunSuite {
 
   test("terrain function level 1") {
     new Level1 {
-      assert(terrain(Pos(0,0)), "0,0")
-      assert(terrain(Pos(1,1)), "1,1") // start
-      assert(terrain(Pos(4,7)), "4,7") // goal
-      assert(terrain(Pos(5,8)), "5,8")
-      assert(!terrain(Pos(5,9)), "5,9")
-      assert(terrain(Pos(4,9)), "4,9")
-      assert(!terrain(Pos(6,8)), "6,8")
-      assert(!terrain(Pos(4,11)), "4,11")
-      assert(!terrain(Pos(-1,0)), "-1,0")
-      assert(!terrain(Pos(0,-1)), "0,-1")
+      assert(startTerrain(Pos(0,0)), "0,0")
+      assert(startTerrain(Pos(1,1)), "1,1") // start
+      assert(startTerrain(Pos(4,7)), "4,7") // goal
+      assert(startTerrain(Pos(5,8)), "5,8")
+      assert(!startTerrain(Pos(5,9)), "5,9")
+      assert(startTerrain(Pos(4,9)), "4,9")
+      assert(!startTerrain(Pos(6,8)), "6,8")
+      assert(!startTerrain(Pos(4,11)), "4,11")
+      assert(!startTerrain(Pos(-1,0)), "-1,0")
+      assert(!startTerrain(Pos(0,-1)), "0,-1")
     }
   }
 
@@ -75,11 +75,11 @@ class BloxorzSuite extends FunSuite {
 
   test("neighborsWithHistory") {
     new Level1 {
-      val state = State(Block(Pos(1,1),Pos(1,1)), terrain)
+      val state = State(Block(Pos(1,1),Pos(1,1)), startTerrain)
       assert(neighborsWithHistory(state, List(Left,Up)).toSet ===
         Set(
-          (State(Block(Pos(1,2),Pos(1,3)), terrain), List(Right,Left,Up)),
-          (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
+          (State(Block(Pos(1,2),Pos(1,3)), startTerrain), List(Right,Left,Up)),
+          (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
         )
       )
     }
@@ -90,13 +90,13 @@ class BloxorzSuite extends FunSuite {
       assert(
         newNeighborsOnly(
           Set(
-            (State(Block(Pos(1,2),Pos(1,3)), terrain), List(Right,Left,Up)),
-            (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
+            (State(Block(Pos(1,2),Pos(1,3)), startTerrain), List(Right,Left,Up)),
+            (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
           ).toStream,
 
-          Set(State(Block(Pos(1,2),Pos(1,3)), terrain), State(Block(Pos(1,1),Pos(1,1)), terrain))
+          Set(State(Block(Pos(1,2),Pos(1,3)), startTerrain), State(Block(Pos(1,1),Pos(1,1)), startTerrain))
         ) === Set(
-          (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
+          (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
         ).toStream
       )
     }
