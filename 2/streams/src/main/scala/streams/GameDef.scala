@@ -58,7 +58,7 @@ trait GameDef {
    * As explained in the documentation of class `Pos`, the `row` axis
    * is the vertical one and increases from top to bottom.
    */
-  type Terrain = Pos => Boolean
+  trait Terrain extends Function1[Pos, Boolean]
 
 
   /**
