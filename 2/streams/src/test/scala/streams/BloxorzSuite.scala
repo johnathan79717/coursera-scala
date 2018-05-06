@@ -75,10 +75,11 @@ class BloxorzSuite extends FunSuite {
 
   test("neighborsWithHistory") {
     new Level1 {
-      assert(neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet ===
+      val state = State(Block(Pos(1,1),Pos(1,1)), terrain)
+      assert(neighborsWithHistory(state, List(Left,Up)).toSet ===
         Set(
-          (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
-          (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+          (State(Block(Pos(1,2),Pos(1,3)), terrain), List(Right,Left,Up)),
+          (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
         )
       )
     }
@@ -89,13 +90,13 @@ class BloxorzSuite extends FunSuite {
       assert(
         newNeighborsOnly(
           Set(
-            (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
-            (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+            (State(Block(Pos(1,2),Pos(1,3)), terrain), List(Right,Left,Up)),
+            (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
           ).toStream,
 
-          Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1)))
+          Set(State(Block(Pos(1,2),Pos(1,3)), terrain), State(Block(Pos(1,1),Pos(1,1)), terrain))
         ) === Set(
-          (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+          (State(Block(Pos(2,1),Pos(3,1)), terrain), List(Down,Left,Up))
         ).toStream
       )
     }
