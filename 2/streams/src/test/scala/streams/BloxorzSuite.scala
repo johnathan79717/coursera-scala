@@ -135,7 +135,7 @@ class BloxorzSuite extends FunSuite {
 
   test("optimal solution for level 2") {
     new Level2 {
-      //println(pathsFromStart.take(10).toList)
+      println(pathsFromStart.take(10).toList)
       println("Level 2: " + solution)
     }
   }

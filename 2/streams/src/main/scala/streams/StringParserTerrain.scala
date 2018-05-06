@@ -120,6 +120,13 @@ trait StringParserTerrain extends GameDef {
       switches.getOrElse(p, NoOp).activate(isStanding, this)
 
     def isLegal: Boolean = terrain(block.b1) && terrain(block.b2)
+
+    override def toString = {
+      def updated(t: Tiles, p: Pos, c: Char) =
+        t.updated(p.row, t(p.row).updated(p.col, c))
+      val newTiles = updated(updated(tiles, block.b1, '#'), block.b2, '#')
+      "\n" + (newTiles.map(_ mkString "") mkString "\n")
+    }
   }
 
   lazy val startTerrain = terrainFunction(vector)
