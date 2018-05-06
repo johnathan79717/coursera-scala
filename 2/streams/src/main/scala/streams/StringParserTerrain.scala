@@ -132,5 +132,5 @@ trait StringParserTerrain extends GameDef {
   lazy val startTerrain = terrainFunction(vector)
   lazy val startPos: Pos = findChar('S', vector)
   lazy val goal: Pos = findChar('T', vector)
-  lazy val startState = BlockTilesState(startBlock, vector)
+  def startState = BlockTilesState(startBlock, vector)
 }

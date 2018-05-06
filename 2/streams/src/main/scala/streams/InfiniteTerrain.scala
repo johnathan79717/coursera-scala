@@ -20,5 +20,5 @@ trait InfiniteTerrain extends GameDef {
 
     def isLegal: Boolean = startTerrain(block.b1) && startTerrain(block.b2)
   }
-  val startState = BlockState(startBlock)
+  def startState = BlockState(startBlock)
 }

@@ -145,5 +145,5 @@ trait GameDef {
     def legalNeighbors: List[(State, Move)]
   }
 
-  val startState: State
+  def startState: State
 }

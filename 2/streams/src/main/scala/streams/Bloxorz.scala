@@ -45,5 +45,34 @@ object Bloxorz extends App {
         |------ooo-""".stripMargin
   }
 
-  println(Level1.solution)
+  println("Level 1: " + Level1.solution)
+
+  object Level2 extends Level {
+    val level =
+    """------oooo--ooo
+      |oooo--ooxo--oTo
+      |ooOo--oooo--ooo
+      |oooo--oooo--ooo
+      |oSoo--oooo--ooo
+      |oooo--oooo-----""".stripMargin
+
+    override val switches = Map(
+      Pos(2, 2) -> Toggle(List(Pos(4, 4), Pos(4, 5)), false),
+      Pos(1, 8) -> Toggle(List(Pos(4, 10), Pos(4, 11)), true)
+      )
+  }
+
+  println("Level 2: " + Level2.solution)
+
+  object Level3 extends Level {
+    val level =
+    """------ooooooo--
+      |oooo--ooo--oo--
+      |ooooooooo--oooo
+      |oSoo-------ooTo
+      |oooo-------oooo
+      |------------ooo""".stripMargin
+  }
+
+  println("Level 3: " + Level3.solution)
 }
