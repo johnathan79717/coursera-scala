@@ -11,8 +11,14 @@ package streams
  * restrictions.
  */
 trait InfiniteTerrain extends GameDef {
-  val startTerrain = new Terrain {
-    def apply(pos: Pos) = true
-    def pressedBy(b: Block) = this 
+  val startTerrain: Terrain = (pos: Pos) => true
+  case class BlockState(val block: Block) extends State {
+    def legalNeighbors = for {
+      (newBlock, move) <- block.neighbors
+      s = BlockState(newBlock) if s.isLegal
+    } yield (s, move)
+
+    def isLegal: Boolean = startTerrain(block.b1) && startTerrain(block.b2)
   }
+  val startState = BlockState(startBlock)
 }

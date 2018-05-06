@@ -16,16 +16,16 @@ class BloxorzSuite extends FunSuite {
      * `startPos`. This can be used to verify if a certain list of moves
      * is a valid solution, i.e. leads to the goal.
      */
-    def solve(ls: List[Move]): State =
+    def solve(ls: List[Move]): BlockTilesState =
       ls.foldLeft(startState) { case (state, move) =>
         require(state.isLegal) // The solution must always lead to legal blocks
-        val State(block, terrain) = state
-        State(move match {
+        val BlockTilesState(block, tiles) = state
+        BlockTilesState(move match {
           case Left => block.left
           case Right => block.right
           case Up => block.up
           case Down => block.down
-        }, terrain)
+        }, tiles)
     }
   }
 
@@ -53,6 +53,21 @@ class BloxorzSuite extends FunSuite {
       |------------ooo""".stripMargin
   }
 
+  trait Level2 extends SolutionChecker {
+    val level =
+    """------oooo--ooo
+      |oooo--ooxo--oTo
+      |ooOo--oooo--ooo
+      |oooo--oooo--ooo
+      |oSoo--oooo--ooo
+      |oooo--oooo-----""".stripMargin
+
+    override val switches = Map(
+      Pos(2, 2) -> Toggle(List(Pos(4, 4), Pos(4, 5)), false),
+      Pos(1, 8) -> Toggle(List(Pos(4, 10), Pos(4, 11)), true)
+      )
+  }
+
   test("terrain function level 1") {
     new Level1 {
       assert(startTerrain(Pos(0,0)), "0,0")
@@ -76,11 +91,11 @@ class BloxorzSuite extends FunSuite {
 
   test("neighborsWithHistory") {
     new Level1 {
-      val state = State(Block(Pos(1,1),Pos(1,1)), startTerrain)
+      val state = BlockTilesState(Block(Pos(1,1),Pos(1,1)), vector)
       assert(neighborsWithHistory(state, List(Left,Up)).toSet ===
         Set(
-          (State(Block(Pos(1,2),Pos(1,3)), startTerrain), List(Right,Left,Up)),
-          (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
+          (BlockTilesState(Block(Pos(1,2),Pos(1,3)), vector), List(Right,Left,Up)),
+          (BlockTilesState(Block(Pos(2,1),Pos(3,1)), vector), List(Down,Left,Up))
         )
       )
     }
@@ -91,13 +106,13 @@ class BloxorzSuite extends FunSuite {
       assert(
         newNeighborsOnly(
           Set(
-            (State(Block(Pos(1,2),Pos(1,3)), startTerrain), List(Right,Left,Up)),
-            (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
+            (BlockTilesState(Block(Pos(1,2),Pos(1,3)), vector), List(Right,Left,Up)),
+            (BlockTilesState(Block(Pos(2,1),Pos(3,1)), vector), List(Down,Left,Up))
           ).toStream,
 
-          Set(State(Block(Pos(1,2),Pos(1,3)), startTerrain), State(Block(Pos(1,1),Pos(1,1)), startTerrain))
+          Set(BlockTilesState(Block(Pos(1,2),Pos(1,3)), vector), BlockTilesState(Block(Pos(1,1),Pos(1,1)), vector))
         ) === Set(
-          (State(Block(Pos(2,1),Pos(3,1)), startTerrain), List(Down,Left,Up))
+          (BlockTilesState(Block(Pos(2,1),Pos(3,1)), vector), List(Down,Left,Up))
         ).toStream
       )
     }
@@ -115,6 +130,13 @@ class BloxorzSuite extends FunSuite {
   test("optimal solution length for level 1") {
     new Level1 {
       assert(solution.length == optsolution.length)
+    }
+  }
+
+  test("optimal solution for level 2") {
+    new Level2 {
+      //println(pathsFromStart.take(10).toList)
+      println("Level 2: " + solution)
     }
   }
 

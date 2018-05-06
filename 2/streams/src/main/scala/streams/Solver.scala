@@ -80,15 +80,15 @@ trait Solver extends GameDef {
   /**
    * The stream of all paths that begin at the starting block.
    */
-  lazy val pathsFromStart: Stream[(State, List[Move])] =
+  def pathsFromStart[T <: Terrain]: Stream[(State, List[Move])] =
     from(Stream((startState, Nil)), Set(startState))
 
   /**
    * Returns a stream of all possible pairs of the goal block along
    * with the history how it was reached.
    */
-  lazy val pathsToGoal: Stream[(State, List[Move])] =
-    pathsFromStart filter { case (block, _) => done(block) }
+  def pathsToGoal[T <: Terrain]: Stream[(State, List[Move])] =
+    pathsFromStart filter { case (state, _) => done(state) }
 
   /**
    * The (or one of the) shortest sequence(s) of moves to reach the

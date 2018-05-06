@@ -72,49 +72,58 @@ trait StringParserTerrain extends GameDef {
     Pos(row, col)
   }
 
-  private lazy val vector: Vector[Vector[Char]] =
+  lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
 
   abstract class Switch {
-    val positions: List[Pos]
+    val targets: List[Pos]
     val isHard: Boolean
-    def transformSquare(c: Char): Char
-    def activate(t: TerrainWithSwitches): TerrainWithSwitches = {
-      val newVector = (positions foldLeft t.vector) {
-        case (v, Pos(row, col)) => {
-          val rowVector = v(row)
-          v.updated(row, rowVector.updated(col, transformSquare(rowVector(col))))
+    def transformTile(c: Char): Char
+    def activate(isStanding: Boolean, s: BlockTilesState): BlockTilesState = {
+      if (isHard && !isStanding) s
+      else {
+        val newTiles = (targets foldLeft s.tiles) {
+          case (t, Pos(row, col)) => {
+            val rowTiles = t(row)
+            t.updated(row, rowTiles.updated(col, transformTile(rowTiles(col))))
+          }
         }
+        BlockTilesState(s.block, newTiles)
       }
-      TerrainWithSwitches(newVector)
     }
   }
   case object NoOp extends Switch {
-    val positions = List()
+    val targets = List()
     val isHard = true
-    def transformSquare(c: Char) = c
+    def transformTile(c: Char) = c
   }
-  case class Toggle(val positions: List[Pos], val isHard: Boolean) extends Switch {
-    def transformSquare(c: Char) = if (c == '-') 'o' else '-'
+  case class Toggle(val targets: List[Pos], val isHard: Boolean) extends Switch {
+    def transformTile(c: Char) = if (c == '-') 'o' else '-'
   }
 
-  val switches: Map[Pos, Switch] = Map()
-  type V2 = Vector[Vector[Char]]
+  val switches: Map[Pos, Switch] = Map().withDefaultValue(NoOp);
+  type Tiles = Vector[Vector[Char]]
 
-  case class TerrainWithSwitches(val vector: V2) extends Terrain {
-    def apply(pos: Pos) = terrainFunction(vector)(pos)
-    def pressedBy(p: Pos, isStanding: Boolean): TerrainWithSwitches = {
-      val switch = switches(p)
-      if (switch.isHard && !isStanding) this
-      else switch.activate(this)
+  case class BlockTilesState(val block: Block, val tiles: Tiles) extends State {
+    lazy val terrain = terrainFunction(tiles)
+    def legalNeighbors = for {
+      (newBlock, move) <- block.neighbors
+      s = BlockTilesState(newBlock, tiles).activateSwitch if s.isLegal
+    } yield (s, move)
+
+    def activateSwitch: BlockTilesState = {
+      if (block.isStanding) activateSwitch(block.b1, true)
+      else activateSwitch(block.b1, false).activateSwitch(block.b2, false)
     }
-    def pressedBy(b: Block): Terrain =
-      if (b.isStanding) pressedBy(b.b1, true)
-      else pressedBy(b.b1, false).pressedBy(b.b2, false)
+
+    def activateSwitch(p: Pos, isStanding: Boolean): BlockTilesState =
+      switches.getOrElse(p, NoOp).activate(isStanding, this)
+
+    def isLegal: Boolean = terrain(block.b1) && terrain(block.b2)
   }
 
-  lazy val startTerrain: Terrain = TerrainWithSwitches(vector)
+  lazy val startTerrain = terrainFunction(vector)
   lazy val startPos: Pos = findChar('S', vector)
   lazy val goal: Pos = findChar('T', vector)
-
+  lazy val startState = BlockTilesState(startBlock, vector)
 }

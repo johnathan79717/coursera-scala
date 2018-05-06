@@ -58,10 +58,7 @@ trait GameDef {
    * As explained in the documentation of class `Pos`, the `row` axis
    * is the vertical one and increases from top to bottom.
    */
-  trait Terrain extends Function1[Pos, Boolean] {
-    def pressedBy(b: Block): Terrain
-  }
-
+  type Terrain = Pos => Boolean
 
   /**
    * The terrain of this game. This value is left abstract.
@@ -143,14 +140,10 @@ trait GameDef {
     def isStanding: Boolean = b1 == b2
   }
 
-  case class State(val block: Block, val terrain: Terrain) {
-    def legalNeighbors: List[(State, Move)] = for {
-      (newBlock, move) <- block.neighbors
-      s = State(newBlock, terrain) if s.isLegal
-    } yield (s, move)
-
-    def isLegal: Boolean = terrain(block.b1) && terrain(block.b2)
+  trait State {
+    val block: Block
+    def legalNeighbors: List[(State, Move)]
   }
 
-  def startState: State = State(startBlock, startTerrain)
+  val startState: State
 }
