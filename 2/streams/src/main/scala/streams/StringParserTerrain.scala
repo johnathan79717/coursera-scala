@@ -100,6 +100,9 @@ trait StringParserTerrain extends GameDef {
   case class Toggle(val targets: List[Pos], val isHard: Boolean) extends Switch {
     def transformTile(c: Char) = if (c == '-') 'o' else '-'
   }
+  case class Remove(val targets: List[Pos], val isHard: Boolean) extends Switch {
+    def transformTile(c: Char) = '-'
+  }
 
   val switches: Map[Pos, Switch] = Map().withDefaultValue(NoOp);
   type Tiles = Vector[Vector[Char]]

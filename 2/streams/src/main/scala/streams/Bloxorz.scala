@@ -75,4 +75,81 @@ object Bloxorz extends App {
   }
 
   println("Level 3: " + Level3.solution)
+
+  object Level4 extends Level {
+    val level =
+    """---ooooooo----
+      |---ooooooo----
+      |oooo-----ooo--
+      |ooo-------oo--
+      |ooo-------oo--
+      |oSo--ooooooooo
+      |ooo--ooooooooo
+      |-----oTo--oooo
+      |-----ooo--oooo""".stripMargin
+  }
+
+  println("Level 4: " + Level4.solution)
+
+  object Level5 extends Level {
+    val level =
+    """-----------oooo
+      |-ooooooo1ooooSo
+      |-oooo-------ooo
+      |-oo2o----------
+      |-oooo----------
+      |---ooo3oooooo--
+      |----------oooo4
+      |ooo-------ooooo
+      |oTooo5ooooooo--
+      |oooo-----------""".stripMargin
+      override val switches = Map(
+        Pos(1, 8) -> Toggle(List(Pos(1, 5), Pos(1, 6)), false),
+        Pos(5, 6) -> Remove(List(Pos(8, 5), Pos(8, 6)), false),
+        Pos(6, 14) -> Toggle(List(Pos(8, 5), Pos(8, 6)), false)
+        )
+  }
+
+  println("Level 5: " + Level5.solution)
+
+  object Level6 extends Level {
+    val level =
+    """-----oooooo----
+      |-----o--ooo----
+      |-----o--ooooo--
+      |Sooooo-----oooo
+      |----ooo----ooTo
+      |----ooo-----ooo
+      |------o--oo----
+      |------ooooo----
+      |------ooooo----
+      |-------ooo-----""".stripMargin
+  }
+
+  println("Level 6: " + Level6.solution)
+
+
+  object Level7 extends Level {
+    val level =
+    """--------oooo---
+      |--------oooo---
+      |ooo-----o--oooo
+      |oSooooooo---oTo
+      |ooo----ooX--ooo
+      |ooo----ooo--ooo
+      |-oo----o-------
+      |--oooooo-------""".stripMargin
+    val x = findChar('X', vector)
+    //val q = findChar('?', vector)
+    //println(q)
+    //override lazy val goal = x
+    override val switches = Map(
+      x -> Toggle(List(Pos(6, 3)), true)
+      )
+  }
+
+  println("Level 7: " + Level7.solution)
+
+  // Level 8: Passcode: 499707
+
 }
